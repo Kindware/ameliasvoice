@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amelia's Voice</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Initial Begin Prompt Overlay -->
+    <div id="begin-prompt">
+        <h1>Welcome to Amelia's Voice</h1>
+        <p>Please press Begin to start.</p>
+        <button id="begin-button">Begin</button>
+    </div>
+
+    <div id="page-container" style="display: none;">
+        <!-- Tiles will be loaded here by JavaScript -->
+
+        <!-- Admin Access Elements -->
+        <div id="admin-trigger"></div>
+        <div id="corner-btn-tl" class="corner-button hidden"></div>
+        <div id="corner-btn-tr" class="corner-button hidden"></div>
+        <div id="corner-btn-bl" class="corner-button hidden"></div>
+        <div id="corner-btn-br" class="corner-button hidden"></div>
+    </div>
+
+    <div id="admin-panel" class="hidden">
+        <h2>Administration Menu</h2>
+
+        <div class="admin-section">
+            <h3>Import Assets</h3>
+            <label for="image-upload">Upload Images (.webp):</label>
+            <input type="file" id="image-upload" name="image-upload" accept="image/webp" multiple>
+            <br><br>
+            <label for="audio-upload">Upload Audio (.mp3):</label>
+            <input type="file" id="audio-upload" name="audio-upload" accept="audio/mpeg" multiple>
+            <br><br>
+            <button id="process-uploads">Process Uploads</button>
+        </div>
+
+        <hr>
+
+        <div class="admin-section">
+            <h3>Manage Tiles & Pages</h3>
+
+            <div class="form-group">
+                <label for="admin-page-select">Select Page to Edit:</label>
+                <select id="admin-page-select" name="admin-page-select">
+                    <!-- Options populated by JS -->
+                </select>
+                 <button id="admin-create-page">New Page</button>
+                 <button id="admin-delete-page" style="background-color: #ffc107; color: black;">Delete Current Page</button>
+            </div>
+
+            <div class="form-group">
+                <label>Set Background Color:</label>
+                <div id="admin-color-swatches" class="color-swatch-container">
+                    <!-- Swatches populated by JS -->
+                </div>
+            </div>
+
+            <h4>Page Layout (Drag available tiles here or reorder existing)</h4>
+            <div id="admin-page-layout-grid" class="admin-grid">
+                <!-- Tile slots populated by JS -->
+            </div>
+
+            <hr style="margin: 15px 0;">
+
+            <h4>Available Tiles (Drag to layout above)</h4>
+            <div id="admin-available-tiles-list" class="admin-tile-pool">
+                 <!-- Available tiles populated by JS -->
+                 <p>Loading available tiles...</p>
+            </div>
+
+            <br>
+            <button id="admin-save-layout">Save Current Page Layout</button>
+
+        </div>
+
+        <hr>
+
+        <button id="close-admin">Close Admin</button>
+    </div>
+
+    <!-- Placeholder Audio Element -->
+    <audio id="audio-player"></audio>
+
+    <script src="script.js"></script>
+</body>
+</html> 

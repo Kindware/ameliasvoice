@@ -1,0 +1,23 @@
+{
+    "1988ac9c-9e16-46dd-bd56-a314edbe38ec": {
+        "id": "1988ac9c-9e16-46dd-bd56-a314edbe38ec",
+        "text": "Apple",
+        "image": "apple_border.webp",
+        "audio": "Apple.mp3",
+        "nextPage": "food"
+    },
+    "0613fd9c-297a-462a-b2fb-1071cc9113e8": {
+        "id": "0613fd9c-297a-462a-b2fb-1071cc9113e8",
+        "text": "Cookies",
+        "image": "Cookies.webp",
+        "audio": "Cookie.mp3",
+        "nextPage": "food"
+    },
+    "f92b0f7a-12a7-4338-916e-5ac024c3e2d3": {
+        "id": "f92b0f7a-12a7-4338-916e-5ac024c3e2d3",
+        "text": "Meat",
+        "image": "Meat.webp",
+        "audio": "Meat.mp3",
+        "nextPage": ""
+    }
+}

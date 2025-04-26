@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amelia's Voice - Admin</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input[type="text"], input[type="file"], select {
+            width: 95%;
+            max-width: 400px;
+            padding: 8px;
+            margin-bottom: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button { padding: 10px 15px; background-color: dodgerblue; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: steelblue; }
+        hr { margin: 30px 0; }
+        #tile-list { margin-top: 20px; }
+        .tile-item { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 4px; display: flex; align-items: center; justify-content: space-between; }
+        .tile-item img { max-width: 50px; max-height: 50px; margin-right: 10px; }
+        .tile-actions button { background-color: #dc3545; font-size: 0.8em; padding: 5px 8px; }
+    </style>
+</head>
+<body>
+    <h1>Amelia's Voice - Tile Management</h1>
+
+    <hr>
+
+    <h2>Create New Tile</h2>
+    <!-- The form will POST data and files to our new API endpoint -->
+    <form id="create-tile-form" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="tile-text">Tile Text/Name:</label>
+            <input type="text" id="tile-text" name="tile-text" required>
+        </div>
+        <div class="form-group">
+            <label for="tile-image">Image File (.webp):</label>
+            <input type="file" id="tile-image" name="tile-image" accept="image/webp" required>
+        </div>
+        <div class="form-group">
+            <label for="tile-audio">Audio File (.mp3):</label>
+            <input type="file" id="tile-audio" name="tile-audio" accept="audio/mpeg" required>
+        </div>
+        <div class="form-group">
+            <label for="next-page">Target Page ID (Optional):</label>
+            <input type="text" id="next-page" name="next-page" placeholder="e.g., food, drinks (leave blank if none)">
+        </div>
+        <button type="submit">Create Tile</button>
+    </form>
+    <p id="create-status"></p>
+
+    <hr>
+
+    <h2>Existing Tiles</h2>
+    <div id="tile-list">
+        <!-- Existing tiles will be loaded here by JavaScript -->
+        <p>Loading existing tiles...</p>
+    </div>
+
+    <script>
+        const API_ENDPOINT_TILES = '/api/tiles'; // Relative path since admin page served by same server
+        const ASSET_BASE_URL = '/assets';
+
+        const form = document.getElementById('create-tile-form');
+        const statusElement = document.getElementById('create-status');
+        const tileListElement = document.getElementById('tile-list');
+
+        // --- Load existing tiles on page load ---
+        async function loadExistingTiles() {
+            tileListElement.innerHTML = '<p>Loading existing tiles...</p>';
+            try {
+                const response = await fetch(API_ENDPOINT_TILES);
+                if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+                const tiles = await response.json();
+
+                if (tiles.length === 0) {
+                    tileListElement.innerHTML = '<p>No tiles defined yet.</p>';
+                    return;
+                }
+
+                tileListElement.innerHTML = ''; // Clear loading message
+                tiles.forEach(tile => {
+                    const div = document.createElement('div');
+                    div.classList.add('tile-item');
+                    div.dataset.tileId = tile.id;
+
+                    const img = document.createElement('img');
+                    img.src = tile.image ? `${ASSET_BASE_URL}/images/${tile.image}` : '#'; // Add placeholder?
+                    img.alt = tile.text;
+                    img.onerror = () => { img.style.display = 'none'; } // Hide if broken
+
+                    const info = document.createElement('span');
+                    info.innerHTML = `
+                        <strong>${tile.text || '[No Text]'}</strong><br>
+                        <small>ID: ${tile.id}<br>
+                        Image: ${tile.image || 'None'}<br>
+                        Audio: ${tile.audio || 'None'}<br>
+                        Links to: ${tile.nextPage || '-'}</small>
+                    `;
+
+                    const actions = document.createElement('div');
+                    actions.classList.add('tile-actions');
+                    const deleteButton = document.createElement('button');
+                    deleteButton.textContent = 'Delete';
+                    deleteButton.onclick = () => deleteTile(tile.id);
+                    actions.appendChild(deleteButton);
+                    // Add Edit button later
+
+                    div.appendChild(img);
+                    div.appendChild(info);
+                    div.appendChild(actions);
+                    tileListElement.appendChild(div);
+                });
+
+            } catch (error) {
+                console.error("Error loading tiles:", error);
+                tileListElement.innerHTML = '<p style="color:red;">Error loading existing tiles.</p>';
+            }
+        }
+
+        // --- Handle Form Submission ---
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            statusElement.textContent = 'Creating tile...';
+            statusElement.style.color = 'black';
+
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch(API_ENDPOINT_TILES, {
+                    method: 'POST',
+                    body: formData // Send form data including files
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    statusElement.textContent = `Tile created successfully! ID: ${result.id}`;
+                    statusElement.style.color = 'green';
+                    form.reset(); // Clear the form
+                    loadExistingTiles(); // Refresh the list
+                } else {
+                    throw new Error(result.error || `HTTP error: ${response.status}`);
+                }
+
+            } catch (error) {
+                console.error("Error creating tile:", error);
+                statusElement.textContent = `Error: ${error.message}`;
+                statusElement.style.color = 'red';
+            }
+        });
+
+        // --- Delete Tile Function ---
+        async function deleteTile(tileId) {
+            if (!confirm(`Are you sure you want to delete tile ID: ${tileId}? This cannot be undone.`)) {
+                return;
+            }
+            console.log(`Attempting to delete tile: ${tileId}`);
+            try {
+                const response = await fetch(`${API_ENDPOINT_TILES}/${tileId}`, {
+                    method: 'DELETE'
+                });
+
+                 if (response.ok) {
+                    console.log(`Tile ${tileId} deleted successfully.`);
+                     // Remove the tile element from the list visually
+                     const tileElement = tileListElement.querySelector(`[data-tile-id="${tileId}"]`);
+                     if(tileElement) tileElement.remove();
+                     // Optionally show a success message
+                } else {
+                     const result = await response.json(); // Try to get error message
+                    throw new Error(result.error || `HTTP error: ${response.status}`);
+                }
+
+            } catch (error) {
+                console.error(`Error deleting tile ${tileId}:`, error);
+                alert(`Error deleting tile: ${error.message}`);
+            }
+        }
+
+        // --- Initial Load ---
+        loadExistingTiles();
+
+    </script>
+
+</body>
+</html> 

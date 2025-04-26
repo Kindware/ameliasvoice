@@ -1,0 +1,305 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    font-family: sans-serif;
+    background-color: #f0f0f0; /* Light background */
+    overflow: hidden; /* Prevent body scroll */
+}
+
+#page-container {
+    display: none; /* Hidden by default, shown by JS */
+    grid-template-columns: repeat(6, 1fr); /* 6 columns */
+    grid-template-rows: repeat(4, 1fr);    /* 4 rows */
+    gap: 10px; /* Spacing between tiles */
+    padding: 10px;
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    box-sizing: border-box; /* Include padding in width/height */
+    overflow: hidden; /* Prevent container scroll */
+    position: relative; /* Needed for absolute positioning of children like admin-trigger */
+}
+
+.tile {
+    background-color: #fff; /* White background for tiles */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    overflow: hidden; /* Hide parts of image if it overflows */
+    transition: transform 0.1s ease-in-out; /* Smooth scaling */
+    position: relative; /* For potential absolute positioning of text */
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.1);
+}
+
+.tile img {
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain; /* Scale image while preserving aspect ratio */
+    display: block;
+}
+
+.tile.pressed img {
+    transform: scale(1.5); /* Zoom effect - adjusted from 1.5 to work better within tile */
+    transition: transform 0.1s ease-in-out;
+}
+
+/* Basic Admin Panel Styling (Hidden by default) */
+#admin-panel {
+    position: fixed; /* Or absolute */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 700px; /* Slightly wider perhaps? */
+    max-height: 90vh; /* Limit height to 90% of viewport height */
+    background-color: white;
+    padding: 20px;
+    border: 1px solid #ccc;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    z-index: 1000; /* Ensure it's on top */
+    overflow-y: auto; /* Add vertical scrollbar only when needed */
+}
+
+.hidden {
+    display: none;
+}
+
+/* Responsive adjustments - refine later */
+@media (max-width: 600px) {
+    #page-container {
+        gap: 5px;
+        padding: 5px;
+        /* Potentially adjust grid for very small screens if needed */
+    }
+    .tile {
+        border-radius: 4px;
+    }
+}
+
+/* --- Admin Access Elements --- */
+
+#admin-trigger {
+    position: absolute;
+    /* Use viewport units for better cross-device positioning */
+    bottom: 1vh; /* 1% of viewport height from bottom */
+    right: 2vw;  /* 2% of viewport width from right */
+    width: 30px; /* Slightly larger */
+    height: 30px;
+    background-color: rgba(0, 0, 0, 0.15); /* Slightly more visible */
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    transition: background-color 0.3s;
+}
+
+#admin-trigger:hover {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.corner-button {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    background-color: dodgerblue;
+    color: white;
+    border: 2px solid white;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+    z-index: 20; /* Above trigger and tiles */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: background-color 0.2s;
+}
+
+.corner-button:hover {
+    background-color: deepskyblue;
+}
+
+/* Explicit positions for corner buttons */
+#corner-btn-tl { top: 20px; left: 20px; }
+#corner-btn-tr { top: 20px; right: 20px; }
+#corner-btn-bl { bottom: 20px; left: 20px; }
+#corner-btn-br { bottom: 20px; right: 20px; }
+
+/* Class to slightly obscure main content during unlock */
+.admin-unlock-active #page-container > .tile {
+    opacity: 0.3;
+    pointer-events: none; /* Prevent interaction with tiles */
+}
+
+/* --- Admin Panel Layout Management --- */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, minmax(80px, auto)); /* Min height for empty slots */
+    gap: 8px;
+    padding: 8px;
+    border: 1px dashed #999;
+    background-color: #f8f8f8;
+    min-height: 350px; /* Ensure it has some height even when empty */
+}
+
+.admin-grid-slot,
+.admin-available-tile {
+    border: 1px solid #ccc;
+    background-color: #fff;
+    padding: 5px;
+    text-align: center;
+    font-size: 0.8em;
+    min-height: 70px; /* Consistent height */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* For potential overlays or buttons */
+    cursor: grab; /* Indicate draggable */
+    overflow: hidden;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+.admin-grid-slot.empty {
+    background-color: #eee;
+    cursor: default;
+}
+
+.admin-grid-slot img,
+.admin-available-tile img {
+    max-width: 40px;
+    max-height: 40px;
+    margin-bottom: 5px;
+    object-fit: contain;
+}
+
+.admin-tile-pool {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px;
+    border: 1px dashed #aaa;
+    background-color: #f0f0f0;
+    min-height: 100px;
+}
+
+.admin-available-tile {
+    width: 80px; /* Fixed width for pool items */
+}
+
+/* Style for selected available tile */
+.admin-available-tile.selected {
+    border: 2px solid dodgerblue;
+    background-color: #e0f0ff;
+    box-shadow: 0 0 5px dodgerblue;
+}
+
+/* Style for when dragging over a valid drop target */
+.admin-grid-slot.drag-over {
+    border-color: dodgerblue;
+    background-color: #e0f0ff;
+    border-style: solid;
+}
+
+/* Style for the element being dragged */
+.dragging {
+    opacity: 0.5;
+    border: 2px dashed red;
+}
+
+/* Small remove button on placed tiles */
+.admin-remove-tile-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 16px;
+    height: 16px;
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 10px;
+    line-height: 14px;
+    padding: 0;
+}
+.admin-remove-tile-btn:hover {
+    background-color: red;
+}
+
+/* --- Color Swatches --- */
+.color-swatch-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 5px;
+}
+
+.admin-color-swatch {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.1s ease-out, border-color 0.1s ease-out;
+}
+
+.admin-color-swatch:hover {
+    transform: scale(1.1);
+}
+
+.admin-color-swatch.selected {
+    border-color: #333;
+    border-width: 3px;
+    transform: scale(1.1);
+}
+
+/* Begin Prompt Overlay */
+#begin-prompt {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85); /* Darker background */
+    color: white;
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 2000; /* Above everything else initially */
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+#begin-prompt h1 {
+    margin-bottom: 15px;
+    font-size: 2.5em;
+}
+
+#begin-prompt p {
+    margin-bottom: 25px;
+    font-size: 1.2em;
+}
+
+#begin-prompt button {
+    padding: 15px 30px;
+    font-size: 1.5em;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: dodgerblue;
+    color: white;
+    transition: background-color 0.2s;
+}
+
+#begin-prompt button:hover {
+    background-color: deepskyblue;
+}
