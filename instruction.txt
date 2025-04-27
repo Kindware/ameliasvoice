@@ -4,8 +4,22 @@ Until proper systems are in place :
 
 python3 -m venv venv
 source /venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt   ;)
 python3 server.py
 
-Navigate modern web browser to 127.0.0.1:5001
+Navigate modern web browser to 127.0.0.1:5001 to use software
+
+Navigate to 127.0.0.1:5001/admin to create tiles
+
+In the main software press and hold the grey button in the bottom corner
+for a long time (an autistic child will not be able to do this) 30 seconds
+and then as a second layer of defense there is a four corner random number trigger
+select buttons in order to access control panel
+
+Within control panel you can create the page layouts and do most tasks
+
+There is an auto return on every page so that inactivity will automatically return
+you to the main menu after 30 seconds.
+
+(There are a lot of 30 second timers, when developing I really reccomend dropping to 1 second!!!)
 
