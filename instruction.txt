@@ -1,54 +1,11 @@
 AmeliasVoice
 
-This is the foundation of a new AAC system
+Until proper systems are in place :
 
-The program consists of multiple pages with tiles that represent words, tiles consist of an image and an audio file
-The main page consists of some single words and some words that open new pages.
-When the user presses a button the image scales to 150% and it plays the audio file, the image stays zoomed while the key is pressed and returns to normal when key is released.
-On any sub page if there is no touch or activity for 30 seconds it returns to the main page.
-We need a secret administration menu that the user can't access but the Parent / Guardian can.
-In the administration menu we can import images and audio clips and use those to make new tiles for the screens,
-we can then re arrange the tiles and move them to other screens, create new ones and add them to screens,
-remove unwanted tiles from screen also.
+python3 -m venv venv
+source /venv/bin/activate
+pip install -r requirements.txt
+python3 server.py
 
-There should be 24 evenly spaces tiles per page 6 tiles wide x 4 tiles deep
+Navigate modern web browser to 127.0.0.1:5001
 
--MAIN PAGE-
--tiles-
-
-Hungry - Zoom tile and play audio, stay zoomed until release, on release open food page
-Thirsty - Zoom tile and play audio, stay zoomed until release, on release open drinks page
-Play - Zoom tile and play audio, stay zoomed until release, on release open play page
-Watch - Zoom tile and play audio, stay zoomed until release, on release open shows page
-Read - Zoom tile and play audio, stay zoomed until release, on release open books page
-People - Zoom tile and play audio, stay zoomed until release, on release open people page
-Manners - Zoom tile and play audio, stay zoomed until release, on release open manners page
-Feelings - Zoom tile and play audio, stay zoomed until release, on release open feelings page
-Owie - Zoom tile and play audio, stay zoomed until release, on release open owie page
-Yes - Zoom tile and play audio, stay zoomed until release, stay on main page
-No - Zoom tile and play audio, stay zoomed until release, stay on main page
-Want - Zoom tile and play audio, stay zoomed until release, stay on main page
-Don't Want - Zoom tile and play audio, stay zoomed until release, stay on main page
-Potty - Zoom tile and play audio, stay zoomed until release, stay on main page
-Like - Zoom tile and play audio, stay zoomed until release, stay on main page
-Don't Like - Zoom tile and play audio, stay zoomed until release, stay on main page
-Tired - Zoom tile and play audio, stay zoomed until release, stay on main page
-Hot - Zoom tile and play audio, stay zoomed until release, stay on main page
-Cold - Zoom tile and play audio, stay zoomed until release, stay on main page
-Come Here - Zoom tile and play audio, stay zoomed until release, stay on main page
-Go Away - Zoom tile and play audio, stay zoomed until release, stay on main page
-Dirty - Zoom tile and play audio, stay zoomed until release, stay on main page
-Loud - Zoom tile and play audio, stay zoomed until release, stay on main page
-Colours - Zoom tile and play audio, stay zoomed until release, on release open colours page
-
-All linked pages tiles are : Zoom tile and play audio, stay zoomed until release, return to main page main page
-
-Images are 512 x 512 pixel .webp files
-Audio are all .ogg format
-
-this web enabled program will be run on a wide variety of screens including phones and tablets so the pages
-must be properly anchored and scale across any screen.
-
-create a placeholder image and sound file for now but we need to make sure we are using simple obvious naming for our files and tiles
-
-When you are done I should be able to go into the administration menu and import all my audio and video and eedit and create all the tile myself.
